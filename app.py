@@ -1,4 +1,3 @@
-# app.py atualizado com histórico
 from flask import Flask, render_template, request, redirect
 import json
 from datetime import datetime
@@ -22,7 +21,7 @@ def home():
 def cliente(id):
     dados = carregar_dados()
     cliente = next((c for c in dados["clientes"] if c["id"] == id), None)
-    return render_template("cliente.html", cliente=cliente, cpf=cliente["cpf"])
+    return render_template("cliente.html", cliente=cliente)
 
 @app.route("/novo")
 def novo_cliente():
@@ -45,14 +44,6 @@ def cadastrar_cliente():
         "historico": []
     }
 
-    if saldo > 0:
-        novo["historico"].append({
-            "tipo": "entrada",
-            "valor": saldo,
-            "venda": "Cadastro inicial",
-            "data": datetime.now().strftime("%d/%m/%Y %H:%M")
-        })
-
     dados["clientes"].append(novo)
     salvar_dados(dados)
     return redirect("/")
@@ -61,6 +52,7 @@ def cadastrar_cliente():
 def adicionar_cashback(cpf):
     valor = float(request.form["valor"])
     numero_venda = request.form["venda"]
+    data = datetime.now().strftime("%d/%m/%Y %H:%M")
 
     dados = carregar_dados()
     for cliente in dados["clientes"]:
@@ -70,7 +62,7 @@ def adicionar_cashback(cpf):
                 "tipo": "entrada",
                 "valor": valor,
                 "venda": numero_venda,
-                "data": datetime.now().strftime("%d/%m/%Y %H:%M")
+                "data": data
             })
             salvar_dados(dados)
             return redirect(f"/cliente/{cliente['id']}")
@@ -80,6 +72,7 @@ def adicionar_cashback(cpf):
 @app.route("/resgatar/<cpf>", methods=["POST"])
 def resgatar_cashback(cpf):
     valor_resgate = float(request.form["resgate"])
+    data = datetime.now().strftime("%d/%m/%Y %H:%M")
 
     dados = carregar_dados()
     for cliente in dados["clientes"]:
@@ -89,16 +82,15 @@ def resgatar_cashback(cpf):
                 cliente.setdefault("historico", []).append({
                     "tipo": "resgate",
                     "valor": valor_resgate,
-                    "data": datetime.now().strftime("%d/%m/%Y %H:%M")
+                    "data": data
                 })
                 salvar_dados(dados)
                 return redirect(f"/cliente/{cliente['id']}")
             else:
-                return "Saldo insuficiente para resgate", 400
-
+                return "Saldo insuficiente", 400
     return "Cliente não encontrado", 404
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0")
 
 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashback Nacar</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0066cc">
+</head>
+<body>
+  <header>
+    <h1>Clientes com Cashback</h1>
+  </header>
+
+  <main>
+    <ul class="lista-clientes">
+      {% for cliente in clientes %}
+        <li>
+          <a href="/cliente/{{ cliente.id }}">
+            {{ cliente.nome }} — R$ {{ "%.2f"|format(cliente.cashback) }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <a href="/novo" class="btn-adicionar">+ Adicionar Cliente</a>
+  </main>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log("✅ Service Worker registrado"))
+        .catch(err => console.error("❌ Erro ao registrar SW:", err));
+    }
+  </script>
+</body>
+</html>
+

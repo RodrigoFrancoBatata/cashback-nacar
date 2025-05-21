@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ cliente.nome }} | Cashback</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0066cc">
+</head>
+<body>
+  <header>
+    <h1>{{ cliente.nome }}</h1>
+  </header>
+
+  <main>
+    <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
+    <p><strong>Saldo de Cashback:</strong> R$ {{ "%.2f"|format(cliente.cashback) }}</p>
+
+    <form action="/cashback/{{ cliente.cpf }}" method="POST" class="formulario">
+      <label for="venda">Número da Venda:</label>
+      <input type="text" name="venda" id="venda" required>
+
+      <label for="valor">Adicionar Cashback (R$):</label>
+      <input type="number" name="valor" id="valor" min="0.01" step="0.01" required>
+
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <form action="/resgatar/{{ cliente.cpf }}" method="POST" class="formulario">
+      <label for="resgate">Resgatar Cashback (R$):</label>
+      <input type="number" name="resgate" id="resgate" min="0.01" step="0.01" required>
+
+      <button type="submit">Resgatar</button>
+    </form>
+
+    <h2>Histórico</h2>
+    {% if cliente.historico %}
+      <ul>
+        {% for item in cliente.historico|reverse %}
+          <li>
+            <strong>{{ item.tipo|capitalize }}</strong> —
+            R$ {{ "%.2f"|format(item.valor) }} —
+            {{ item.data }}
+            {% if item.tipo == 'entrada' %}
+              (Venda: {{ item.venda }})
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Nenhuma movimentação registrada ainda.</p>
+    {% endif %}
+
+    <a href="/" class="btn-voltar">← Voltar</a>
+  </main>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log("✅ Service Worker registrado"))
+        .catch(err => console.error("❌ Erro ao registrar SW:", err));
+    }
+  </script>
+</body>
+</html>

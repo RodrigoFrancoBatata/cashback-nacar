@@ -1,0 +1,94 @@
+/* Estilo global */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    color: #222;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Lista de clientes */
+  .lista-clientes {
+    list-style: none;
+    padding: 0;
+    max-width: 500px;
+    margin: 0 auto 2rem auto;
+  }
+  
+  .lista-clientes li {
+    background-color: #fff;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .lista-clientes a {
+    text-decoration: none;
+    color: #0066cc;
+    font-weight: bold;
+  }
+  
+  /* Botão adicionar */
+  .btn-adicionar {
+    display: block;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0.8rem 1.5rem;
+    background-color: #00c853;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  
+  .btn-adicionar:hover {
+    background-color: #00b347;
+  }
+  
+  /* Formulário */
+  .formulario {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 2rem auto;
+    gap: 1rem;
+  }
+  
+  .formulario input {
+    padding: 0.7rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .formulario button {
+    padding: 0.8rem;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .btn-voltar {
+    display: block;
+    margin: 2rem auto;
+    text-align: center;
+    text-decoration: none;
+    color: #888;
+  }
+
+  

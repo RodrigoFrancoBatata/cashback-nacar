@@ -1,0 +1,37 @@
+{
+  "clientes": [
+    {
+      "id": 1,
+      "nome": "João Silva",
+      "cpf": "123.456.789-00",
+      "cashback": 15.0,
+      "historico": []
+    },
+    {
+      "id": 2,
+      "nome": "Maria Oliveira",
+      "cpf": "987.654.321-00",
+      "cashback": 8.5,
+      "historico": []
+    },
+    {
+      "id": 3,
+      "nome": "Rodrigo Franco",
+      "cpf": "22625238860",
+      "cashback": 9.95,
+      "historico": [
+        {
+          "tipo": "entrada",
+          "valor": 0.01,
+          "venda": "22532623",
+          "data": "21/05/2025 15:06"
+        },
+        {
+          "tipo": "resgate",
+          "valor": 0.02,
+          "data": "21/05/2025 15:06"
+        }
+      ]
+    }
+  ]
+}

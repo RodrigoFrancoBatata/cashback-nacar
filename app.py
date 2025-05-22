@@ -6,7 +6,6 @@ import io
 
 app = Flask(__name__)
 
-# Carrega os dados do JSON
 def carregar_dados():
     with open("clientes.json", "r", encoding="utf-8") as f:
         return json.load(f)
@@ -15,7 +14,6 @@ def salvar_dados(dados):
     with open("clientes.json", "w", encoding="utf-8") as f:
         json.dump(dados, f, indent=2, ensure_ascii=False)
 
-# Página inicial com dashboard
 @app.route("/")
 def home():
     dados = carregar_dados()
@@ -39,19 +37,16 @@ def home():
         top_clientes=top_clientes
     )
 
-# Página de cliente
 @app.route("/cliente/<int:id>")
 def cliente(id):
     dados = carregar_dados()
     cliente = next((c for c in dados["clientes"] if c["id"] == id), None)
     return render_template("cliente.html", cliente=cliente, cpf=cliente["cpf"])
 
-# Formulário de novo cliente
 @app.route("/novo")
 def novo_cliente():
     return render_template("novo.html")
 
-# Processar novo cliente
 @app.route("/cadastrar", methods=["POST"])
 def cadastrar_cliente():
     nome = request.form["nome"]
@@ -75,7 +70,6 @@ def cadastrar_cliente():
     salvar_dados(dados)
     return redirect("/")
 
-# Adicionar cashback
 @app.route("/cashback/<cpf>", methods=["POST"])
 def adicionar_cashback(cpf):
     numero_venda = request.form["venda"]
@@ -97,7 +91,6 @@ def adicionar_cashback(cpf):
 
     return "Cliente não encontrado", 404
 
-# Resgatar cashback
 @app.route("/resgatar/<cpf>", methods=["POST"])
 def resgatar_cashback(cpf):
     valor_resgate = float(request.form["resgate"])
@@ -119,7 +112,6 @@ def resgatar_cashback(cpf):
 
     return "Cliente não encontrado", 404
 
-# Exportar CSV
 @app.route("/exportar/<cpf>")
 def exportar_csv(cpf):
     dados = carregar_dados()
@@ -148,7 +140,6 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
+# 🔥 Importante: necessário para rodar na Render
+app = app
 

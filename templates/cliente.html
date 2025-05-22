@@ -14,17 +14,18 @@
   </header>
 
   <main>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+        {% for categoria, msg in mensagens %}
+          <div class="toast {{ categoria }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
     <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
     <p><strong>Saldo de Cashback:</strong> R$ {{ "%.2f"|format(cliente.cashback) }}</p>
-
-    {% if request.args.get("sucesso") == "add" %}
-      <div class="toast sucesso">✅ Cashback adicionado com sucesso!</div>
-    {% elif request.args.get("sucesso") == "resgatar" %}
-      <div class="toast sucesso">✅ Cashback resgatado com sucesso!</div>
-    {% elif request.args.get("erro") == "saldo" %}
-      <div class="toast erro">❌ Saldo insuficiente para resgate!</div>
-    {% endif %}
 
     <form action="/cashback/{{ cliente.cpf }}" method="POST" class="formulario">
       <label for="venda">Número da Venda:</label>
@@ -71,11 +72,12 @@
         .catch(err => console.error("❌ Erro ao registrar SW:", err));
     }
 
-    // Auto remover toast
+    // Remove toast após 3 segundos
     setTimeout(() => {
       const toast = document.querySelector(".toast");
       if (toast) toast.remove();
-    }, 3500);
+    }, 3000);
   </script>
 </body>
 </html>
+

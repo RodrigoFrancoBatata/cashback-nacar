@@ -37,6 +37,15 @@
   </header>
 
   <main>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+        {% for categoria, msg in mensagens %}
+          <div class="toast {{ categoria }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="resumo">
       <h2>📊 Resumo Geral</h2>
       <p><strong>Total em Cashback:</strong> R$ {{ '%.2f'|format(total_cashback) }}</p>
@@ -85,6 +94,12 @@
         .then(() => console.log("✅ SW registrado"))
         .catch(err => console.error("❌ SW erro:", err));
     }
+
+    // Remover toast após 3s
+    setTimeout(() => {
+      const toast = document.querySelector(".toast");
+      if (toast) toast.remove();
+    }, 3000);
   </script>
 </body>
 </html>

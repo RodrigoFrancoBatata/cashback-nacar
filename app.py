@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import csv
 import io
+import os  # <- necessário para detectar a variável PORT da Render
 
 app = Flask(__name__)
 
@@ -140,6 +141,9 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-# 🔥 Importante: necessário para rodar na Render
-app = app
+# 🔥 O bloco que corrige para funcionar na Render
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
 

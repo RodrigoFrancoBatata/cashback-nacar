@@ -15,16 +15,17 @@
 
   <main>
     <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
+    <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
     <p><strong>Saldo de Cashback:</strong> R$ {{ "%.2f"|format(cliente.cashback) }}</p>
 
     <form action="/cashback/{{ cliente.cpf }}" method="POST" class="formulario">
       <label for="venda">Número da Venda:</label>
       <input type="text" name="venda" id="venda" required>
 
-      <label for="valor">Adicionar Cashback (R$):</label>
-      <input type="number" name="valor" id="valor" min="0.01" step="0.01" required>
+      <label for="venda_valor">Valor da Venda (R$):</label>
+      <input type="number" name="venda_valor" id="venda_valor" min="0.01" step="0.01" required>
 
-      <button type="submit">Adicionar</button>
+      <button type="submit">Adicionar Cashback</button>
     </form>
 
     <form action="/resgatar/{{ cliente.cpf }}" method="POST" class="formulario">
@@ -64,3 +65,5 @@
   </script>
 </body>
 </html>
+
+

@@ -7,59 +7,118 @@
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0066cc">
+  <style>
+    .perfil-box {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      gap: 1rem;
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .perfil-inicial {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #c8e6c9;
+      color: #2e7d32;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .box-dados {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .box-cash {
+      text-align: center;
+      background-color: #ffffff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    .acoes {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .acoes form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      max-width: 180px;
+    }
+    .acoes input {
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .acoes button {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #333;
+      color: white;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>{{ cliente.nome }}</h1>
+    <h1>Olá, {{ cliente.nome }}</h1>
   </header>
 
   <main>
+    <div class="perfil-box">
+      <div class="perfil-inicial">
+        {{ cliente.nome[0] }}{{ cliente.nome.split(' ')[-1][0] }}
+      </div>
+      <div class="box-dados">
+        <strong>Telefone:</strong> {{ cliente.telefone }}<br>
+        <strong>CPF:</strong> {{ cliente.cpf }}
+      </div>
+    </div>
 
-    {% with mensagens = get_flashed_messages(with_categories=true) %}
-      {% if mensagens %}
-        {% for categoria, msg in mensagens %}
-          <div class="toast {{ categoria }}">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    <div class="box-cash">
+      Você tem <strong style="color:green;">R$ {{ "%.2f"|format(cliente.cashback) }}</strong> de cashback.
+    </div>
 
-    <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
-    <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
-    <p><strong>Saldo de Cashback:</strong> R$ {{ "%.2f"|format(cliente.cashback) }}</p>
+    <div class="acoes">
+      <form action="/cashback/{{ cliente.cpf }}" method="POST">
+        <input type="text" name="venda" placeholder="Número de vendas" required>
+        <input type="number" name="venda_valor" placeholder="0,00" min="0.01" step="0.01" required>
+        <button type="submit">Acrescentar<br><u>Cashback</u></button>
+      </form>
 
-    <form action="/cashback/{{ cliente.cpf }}" method="POST" class="formulario">
-      <label for="venda">Número da Venda:</label>
-      <input type="text" name="venda" id="venda" required>
+      <form action="/resgatar/{{ cliente.cpf }}" method="POST">
+        <input type="number" name="resgate" placeholder="0,00" min="0.01" step="0.01" required>
+        <button type="submit">Resgatar<br><u>Cashback</u></button>
+      </form>
+    </div>
 
-      <label for="venda_valor">Valor da Venda (R$):</label>
-      <input type="number" name="venda_valor" id="venda_valor" min="0.01" step="0.01" required>
-
-      <button type="submit">Adicionar Cashback</button>
-    </form>
-
-    <form action="/resgatar/{{ cliente.cpf }}" method="POST" class="formulario">
-      <label for="resgate">Resgatar Cashback (R$):</label>
-      <input type="number" name="resgate" id="resgate" min="0.01" step="0.01" required>
-
-      <button type="submit">Resgatar</button>
-    </form>
-
-    <h2>Histórico</h2>
+    <h2 style="text-align:center;margin-top:2rem;">Histórico</h2>
     {% if cliente.historico %}
       <ul>
         {% for item in cliente.historico|reverse %}
-          <li>
+          <li style="margin:0.5rem auto;text-align:center;">
             <strong>{{ item.tipo|capitalize }}</strong> —
             R$ {{ "%.2f"|format(item.valor) }} —
-            {{ item.data }}
-            {% if item.tipo == 'entrada' %}
-              (Venda: {{ item.venda }})
-            {% endif %}
+            {{ item.data }} {% if item.tipo == 'entrada' %}(Venda: {{ item.venda }}){% endif %}
           </li>
         {% endfor %}
       </ul>
     {% else %}
-      <p>Nenhuma movimentação registrada ainda.</p>
+      <p style="text-align:center;">Nenhuma movimentação registrada ainda.</p>
     {% endif %}
 
     <a href="/" class="btn-voltar">← Voltar</a>
@@ -71,12 +130,6 @@
         .then(() => console.log("✅ Service Worker registrado"))
         .catch(err => console.error("❌ Erro ao registrar SW:", err));
     }
-
-    // Remove toast após 3 segundos
-    setTimeout(() => {
-      const toast = document.querySelector(".toast");
-      if (toast) toast.remove();
-    }, 3000);
   </script>
 </body>
 </html>

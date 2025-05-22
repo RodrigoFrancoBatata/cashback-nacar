@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import csv
 import io
 import os
+import random
+import string
 
 app = Flask(__name__)
 app.secret_key = "segredo"
@@ -107,22 +109,36 @@ def adicionar_cashback(cpf):
 
     return "Cliente não encontrado", 404
 
+def gerar_codigo_unico(existing_codes):
+    while True:
+        codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+        if codigo not in existing_codes:
+            return codigo
+
 @app.route("/resgatar/<cpf>", methods=["POST"])
 def resgatar_cashback(cpf):
     valor_resgate = float(request.form["resgate"])
-
     dados = carregar_dados()
+
     for cliente in dados["clientes"]:
         if cliente["cpf"] == cpf:
             if cliente["cashback"] >= valor_resgate:
                 cliente["cashback"] -= valor_resgate
+
+                codigos_existentes = [
+                    item.get("codigo") for item in cliente.get("historico", [])
+                    if item.get("codigo")
+                ]
+                codigo_resgate = gerar_codigo_unico(codigos_existentes)
+
                 cliente.setdefault("historico", []).append({
                     "tipo": "resgate",
                     "valor": valor_resgate,
+                    "codigo": codigo_resgate,
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M")
                 })
                 salvar_dados(dados)
-                flash("Resgate realizado com sucesso!", "sucesso")
+                flash(f"Resgate realizado com sucesso! Código: {codigo_resgate}", "sucesso")
                 return redirect(f"/cliente/{cliente['id']}")
             else:
                 flash("Saldo insuficiente para resgate.", "erro")
@@ -141,14 +157,15 @@ def exportar_csv(cpf):
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["Data", "Tipo", "Valor", "Número da Venda"])
+    writer.writerow(["Data", "Tipo", "Valor", "Número da Venda", "Código"])
 
     for item in historico:
         writer.writerow([
             item.get("data", ""),
             item.get("tipo", ""),
             f"{item.get('valor', 0):.2f}",
-            item.get("venda", "-")
+            item.get("venda", "-"),
+            item.get("codigo", "")
         ])
 
     output.seek(0)

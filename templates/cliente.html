@@ -71,22 +71,12 @@
       background-color: #333;
       color: white;
     }
-    .btn-exportar {
-      display: inline-block;
-      background-color: #009688;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      margin-bottom: 2rem;
-    }
-    .btn-voltar {
-      display: block;
-      margin: 2rem auto;
+    .codigo-box {
       text-align: center;
-      text-decoration: none;
-      color: #888;
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #0066cc;
     }
   </style>
 </head>
@@ -123,17 +113,22 @@
       </form>
     </div>
 
-    <div style="text-align:center;">
-      <a href="/exportar/{{ cliente.cpf }}" class="btn-exportar">⬇ Baixar Histórico (CSV)</a>
+    {% if cliente.historico and cliente.historico[-1].tipo == 'resgate' and cliente.historico[-1].get('codigo') %}
+    <div class="codigo-box">
+      Código gerado: {{ cliente.historico[-1].codigo }}
     </div>
+    {% endif %}
 
     <h2 style="text-align:center;margin-top:2rem;">Histórico</h2>
     {% if cliente.historico %}
       <ul>
         {% for item in cliente.historico|reverse %}
           <li style="margin:0.5rem auto;text-align:center;">
-            <strong>{{ item.tipo|capitalize }}</strong> — R$ {{ "%.2f"|format(item.valor) }} — {{ item.data }}
+            <strong>{{ item.tipo|capitalize }}</strong> —
+            R$ {{ "%.2f"|format(item.valor) }} —
+            {{ item.data }}
             {% if item.tipo == 'entrada' %}(Venda: {{ item.venda }}){% endif %}
+            {% if item.tipo == 'resgate' and item.codigo %} (Código: {{ item.codigo }}){% endif %}
           </li>
         {% endfor %}
       </ul>
@@ -153,5 +148,6 @@
   </script>
 </body>
 </html>
+
 
 

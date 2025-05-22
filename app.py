@@ -99,7 +99,42 @@ def resgatar_cashback(cpf):
 
     return "Cliente não encontrado", 404
 
+from flask import Response
+import csv
+import io
+
+@app.route("/exportar/<cpf>")
+def exportar_csv(cpf):
+    dados = carregar_dados()
+    cliente = next((c for c in dados["clientes"] if c["cpf"] == cpf), None)
+    if not cliente:
+        return "Cliente não encontrado", 404
+
+    historico = cliente.get("historico", [])
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Data", "Tipo", "Valor", "Número da Venda"])
+
+    for item in historico:
+        writer.writerow([
+            item.get("data", ""),
+            item.get("tipo", ""),
+            f"{item.get('valor', 0):.2f}",
+            item.get("venda", "-")
+        ])
+
+    output.seek(0)
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+
+
 
 

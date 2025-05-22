@@ -36,6 +36,11 @@
     </form>
 
     <h2>Histórico</h2>
+
+    <p>
+      <a href="/exportar/{{ cliente.cpf }}" class="btn-voltar" target="_blank">📄 Exportar histórico (.csv)</a>
+    </p>
+
     {% if cliente.historico %}
       <ul>
         {% for item in cliente.historico|reverse %}

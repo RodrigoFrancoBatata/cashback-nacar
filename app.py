@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, Response
 import json
 from datetime import datetime
+import csv
+import io
 
 app = Flask(__name__)
 
@@ -55,7 +57,7 @@ def cadastrar_cliente():
     salvar_dados(dados)
     return redirect("/")
 
-# Adicionar cashback via formulário (com número da venda e valor da venda)
+# Adicionar cashback
 @app.route("/cashback/<cpf>", methods=["POST"])
 def adicionar_cashback(cpf):
     numero_venda = request.form["venda"]
@@ -99,10 +101,7 @@ def resgatar_cashback(cpf):
 
     return "Cliente não encontrado", 404
 
-from flask import Response
-import csv
-import io
-
+# Exportar CSV
 @app.route("/exportar/<cpf>")
 def exportar_csv(cpf):
     dados = carregar_dados()
@@ -131,10 +130,8 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-
+# Rodar app
 if __name__ == "__main__":
     app.run(debug=True)
-
-
 
 

@@ -18,7 +18,7 @@
       "id": 3,
       "nome": "Rodrigo Franco",
       "cpf": "22625238860",
-      "cashback": 9.95,
+      "cashback": 109.95,
       "historico": [
         {
           "tipo": "entrada",
@@ -30,6 +30,18 @@
           "tipo": "resgate",
           "valor": 0.02,
           "data": "21/05/2025 15:06"
+        },
+        {
+          "tipo": "entrada",
+          "valor": 50.0,
+          "venda": "22532623",
+          "data": "22/05/2025 11:09"
+        },
+        {
+          "tipo": "entrada",
+          "valor": 50.0,
+          "venda": "22365236366",
+          "data": "22/05/2025 11:10"
         }
       ]
     }

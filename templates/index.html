@@ -8,11 +8,20 @@
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0066cc">
   <style>
+    .resumo {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 1rem auto;
+      max-width: 600px;
+    }
+    .resumo h2 {
+      margin-top: 0;
+    }
     .busca {
       text-align: center;
-      margin-bottom: 1rem;
+      margin: 1rem 0;
     }
-
     .busca input {
       padding: 0.5rem;
       width: 80%;
@@ -28,6 +37,18 @@
   </header>
 
   <main>
+    <div class="resumo">
+      <h2>📊 Resumo Geral</h2>
+      <p><strong>Total em Cashback:</strong> R$ {{ '%.2f'|format(total_cashback) }}</p>
+      <p><strong>Total já Resgatado:</strong> R$ {{ '%.2f'|format(total_resgatado) }}</p>
+      <p><strong>Top Clientes:</strong></p>
+      <ul>
+        {% for top in top_clientes %}
+          <li>{{ top.nome }} — R$ {{ '%.2f'|format(top.cashback) }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
     <div class="busca">
       <input type="text" id="filtro" placeholder="Buscar por nome ou CPF...">
     </div>

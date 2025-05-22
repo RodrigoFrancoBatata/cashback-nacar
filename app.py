@@ -15,11 +15,29 @@ def salvar_dados(dados):
     with open("clientes.json", "w", encoding="utf-8") as f:
         json.dump(dados, f, indent=2, ensure_ascii=False)
 
-# Página inicial
+# Página inicial com dashboard
 @app.route("/")
 def home():
     dados = carregar_dados()
-    return render_template("index.html", clientes=dados["clientes"])
+    clientes = dados["clientes"]
+
+    total_cashback = sum(c.get("cashback", 0) for c in clientes)
+    total_resgatado = sum(
+        item["valor"]
+        for c in clientes
+        for item in c.get("historico", [])
+        if item.get("tipo") == "resgate"
+    )
+
+    top_clientes = sorted(clientes, key=lambda c: c.get("cashback", 0), reverse=True)[:5]
+
+    return render_template(
+        "index.html",
+        clientes=clientes,
+        total_cashback=total_cashback,
+        total_resgatado=total_resgatado,
+        top_clientes=top_clientes
+    )
 
 # Página de cliente
 @app.route("/cliente/<int:id>")
@@ -130,7 +148,6 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-# Rodar app
 if __name__ == "__main__":
     app.run(debug=True)
 

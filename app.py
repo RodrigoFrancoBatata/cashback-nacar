@@ -1,15 +1,33 @@
+# ✅ app.py atualizado com clientes inativos
 from flask import Flask, render_template, request, redirect, Response, flash
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import io
 
 app = Flask(__name__)
-app.secret_key = "supersegredo"  # necessário para usar flash()
+app.secret_key = "segredo"
+
+# Marcar clientes como inativos após 6 meses
+def marcar_inativos(clientes):
+    hoje = datetime.now()
+    for c in clientes:
+        historico = c.get("historico", [])
+        if not historico:
+            c["inativo"] = True
+            continue
+        ult_data = max([
+            datetime.strptime(item["data"], "%d/%m/%Y %H:%M")
+            for item in historico if "data" in item
+        ], default=hoje)
+        c["inativo"] = (hoje - ult_data) > timedelta(days=180)
+    return clientes
 
 def carregar_dados():
     with open("clientes.json", "r", encoding="utf-8") as f:
-        return json.load(f)
+        dados = json.load(f)
+    dados["clientes"] = marcar_inativos(dados["clientes"])
+    return dados
 
 def salvar_dados(dados):
     with open("clientes.json", "w", encoding="utf-8") as f:
@@ -30,13 +48,8 @@ def home():
 
     top_clientes = sorted(clientes, key=lambda c: c.get("cashback", 0), reverse=True)[:5]
 
-    return render_template(
-        "index.html",
-        clientes=clientes,
-        total_cashback=total_cashback,
-        total_resgatado=total_resgatado,
-        top_clientes=top_clientes
-    )
+    return render_template("index.html", clientes=clientes, total_cashback=total_cashback,
+                           total_resgatado=total_resgatado, top_clientes=top_clientes)
 
 @app.route("/cliente/<int:id>")
 def cliente(id):
@@ -69,7 +82,7 @@ def cadastrar_cliente():
 
     dados["clientes"].append(novo)
     salvar_dados(dados)
-    flash("Cliente cadastrado com sucesso!")
+    flash("Cliente cadastrado com sucesso!", "sucesso")
     return redirect("/")
 
 @app.route("/cashback/<cpf>", methods=["POST"])
@@ -89,7 +102,7 @@ def adicionar_cashback(cpf):
                 "data": datetime.now().strftime("%d/%m/%Y %H:%M")
             })
             salvar_dados(dados)
-            flash("Cashback adicionado com sucesso!")
+            flash("Cashback adicionado com sucesso!", "sucesso")
             return redirect(f"/cliente/{cliente['id']}")
 
     return "Cliente não encontrado", 404
@@ -109,10 +122,10 @@ def resgatar_cashback(cpf):
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M")
                 })
                 salvar_dados(dados)
-                flash("Cashback resgatado com sucesso!")
+                flash("Resgate realizado com sucesso!", "sucesso")
                 return redirect(f"/cliente/{cliente['id']}")
             else:
-                flash("Saldo insuficiente para resgate", "erro")
+                flash("Saldo insuficiente para resgate.", "erro")
                 return redirect(f"/cliente/{cliente['id']}")
 
     return "Cliente não encontrado", 404
@@ -145,6 +158,5 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-# 🔥 Necessário para Render
+# Necessário para Render
 app = app
-

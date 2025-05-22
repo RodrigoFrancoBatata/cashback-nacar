@@ -1,49 +1,64 @@
 {
-  "clientes": [
-    {
-      "id": 1,
-      "nome": "João Silva",
-      "cpf": "123.456.789-00",
-      "cashback": 15.0,
-      "historico": []
-    },
-    {
-      "id": 2,
-      "nome": "Maria Oliveira",
-      "cpf": "987.654.321-00",
-      "cashback": 8.5,
-      "historico": []
-    },
-    {
-      "id": 3,
-      "nome": "Rodrigo Franco",
-      "cpf": "22625238860",
-      "cashback": 109.95,
-      "historico": [
-        {
-          "tipo": "entrada",
-          "valor": 0.01,
-          "venda": "22532623",
-          "data": "21/05/2025 15:06"
-        },
-        {
-          "tipo": "resgate",
-          "valor": 0.02,
-          "data": "21/05/2025 15:06"
-        },
-        {
-          "tipo": "entrada",
-          "valor": 50.0,
-          "venda": "22532623",
-          "data": "22/05/2025 11:09"
-        },
-        {
-          "tipo": "entrada",
-          "valor": 50.0,
-          "venda": "22365236366",
-          "data": "22/05/2025 11:10"
-        }
-      ]
-    }
-  ]
-}
+    "clientes": [
+      {
+        "id": 1,
+        "nome": "João da Silva",
+        "cpf": "123.456.789-00",
+        "telefone": "11999999999",
+        "cashback": 25.00,
+        "inativo": true,
+        "historico": [
+          {
+            "tipo": "entrada",
+            "valor": 25.00,
+            "venda": "A001",
+            "data": "10/01/2023 12:00"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nome": "Maria Oliveira",
+        "cpf": "987.654.321-00",
+        "telefone": "11988888888",
+        "cashback": 8.5,
+        "inativo": true,
+        "historico": []
+      },
+      {
+        "id": 3,
+        "nome": "Rodrigo Franco",
+        "cpf": "22625238860",
+        "telefone": "11977777777",
+        "cashback": 109.95,
+        "inativo": false,
+        "historico": [
+          {
+            "tipo": "entrada",
+            "valor": 0.01,
+            "venda": "22532623",
+            "data": "21/05/2025 15:06"
+          },
+          {
+            "tipo": "resgate",
+            "valor": 0.02,
+            "data": "21/05/2025 15:06"
+          },
+          {
+            "tipo": "entrada",
+            "valor": 50.0,
+            "venda": "22532623",
+            "data": "22/05/2025 11:09"
+          },
+          {
+            "tipo": "entrada",
+            "valor": 50.0,
+            "venda": "22365236366",
+            "data": "22/05/2025 11:10"
+          }
+        ]
+      }
+    ]
+  }
+
+  

@@ -7,6 +7,20 @@
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0066cc">
+  <style>
+    .busca {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .busca input {
+      padding: 0.5rem;
+      width: 80%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -14,11 +28,15 @@
   </header>
 
   <main>
-    <ul class="lista-clientes">
+    <div class="busca">
+      <input type="text" id="filtro" placeholder="Buscar por nome ou CPF...">
+    </div>
+
+    <ul class="lista-clientes" id="lista-clientes">
       {% for cliente in clientes %}
         <li>
           <a href="/cliente/{{ cliente.id }}">
-            {{ cliente.nome }} — R$ {{ "%.2f"|format(cliente.cashback) }}
+            {{ cliente.nome }} — R$ {{ "%.2f"|format(cliente.cashback) }} — {{ cliente.cpf }}
           </a>
         </li>
       {% endfor %}
@@ -28,12 +46,26 @@
   </main>
 
   <script>
+    const filtro = document.getElementById("filtro");
+    const lista = document.getElementById("lista-clientes");
+
+    filtro.addEventListener("input", () => {
+      const termo = filtro.value.toLowerCase();
+      const itens = lista.querySelectorAll("li");
+
+      itens.forEach(li => {
+        const texto = li.textContent.toLowerCase();
+        li.style.display = texto.includes(termo) ? "block" : "none";
+      });
+    });
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
-        .then(() => console.log("✅ Service Worker registrado"))
-        .catch(err => console.error("❌ Erro ao registrar SW:", err));
+        .then(() => console.log("✅ SW registrado"))
+        .catch(err => console.error("❌ SW erro:", err));
     }
   </script>
 </body>
 </html>
+
 

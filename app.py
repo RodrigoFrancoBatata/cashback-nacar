@@ -1,9 +1,9 @@
-# ✅ app.py atualizado com clientes inativos
 from flask import Flask, render_template, request, redirect, Response, flash
 import json
 from datetime import datetime, timedelta
 import csv
 import io
+import os
 
 app = Flask(__name__)
 app.secret_key = "segredo"
@@ -158,5 +158,9 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-# Necessário para Render
-app = app
+# 🔥 Para compatibilidade com a Render
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(debug=False, host="0.0.0.0", port=port)
+
+

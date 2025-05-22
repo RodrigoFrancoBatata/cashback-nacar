@@ -3,84 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ cliente.nome }} | Cashback</title>
+  <title>Cashback Nacar</title>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0066cc">
   <style>
-    .inativo {
-      color: red;
-      font-weight: bold;
-      font-size: 0.95rem;
+    .resumo {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 1rem auto;
+      max-width: 600px;
     }
-    .ativo {
-      color: green;
-      font-weight: bold;
+    .resumo h2 {
+      margin-top: 0;
+    }
+    .busca {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .busca input {
+      padding: 0.5rem;
+      width: 80%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>{{ cliente.nome }}</h1>
+    <h1>Clientes com Cashback</h1>
   </header>
 
   <main>
-    {% with mensagens = get_flashed_messages(with_categories=true) %}
-      {% if mensagens %}
-        {% for categoria, msg in mensagens %}
-          <div class="toast {{ categoria }}">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
-    <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
-    <p><strong>Status:</strong> {% if cliente.inativo %}<span class="inativo">Inativo (6+ meses)</span>{% else %}<span class="ativo">Ativo</span>{% endif %}</p>
-    <p><strong>Saldo de Cashback:</strong> R$ {{ "%.2f"|format(cliente.cashback) }}</p>
-
-    <form action="/cashback/{{ cliente.cpf }}" method="POST" class="formulario">
-      <label for="venda">Número da Venda:</label>
-      <input type="text" name="venda" id="venda" required>
-
-      <label for="venda_valor">Valor da Venda (R$):</label>
-      <input type="number" name="venda_valor" id="venda_valor" min="0.01" step="0.01" required>
-
-      <button type="submit">Adicionar Cashback</button>
-    </form>
-
-    <form action="/resgatar/{{ cliente.cpf }}" method="POST" class="formulario">
-      <label for="resgate">Resgatar Cashback (R$):</label>
-      <input type="number" name="resgate" id="resgate" min="0.01" step="0.01" required>
-
-      <button type="submit">Resgatar</button>
-    </form>
-
-    <h2>Histórico</h2>
-    {% if cliente.historico %}
+    <div class="resumo">
+      <h2>📊 Resumo Geral</h2>
+      <p><strong>Total em Cashback:</strong> R$ {{ '%.2f'|format(total_cashback) }}</p>
+      <p><strong>Total já Resgatado:</strong> R$ {{ '%.2f'|format(total_resgatado) }}</p>
+      <p><strong>Top Clientes:</strong></p>
       <ul>
-        {% for item in cliente.historico|reverse %}
-          <li>
-            <strong>{{ item.tipo|capitalize }}</strong> —
-            R$ {{ "%.2f"|format(item.valor) }} —
-            {{ item.data }}
-            {% if item.tipo == 'entrada' %}(Venda: {{ item.venda }}){% endif %}
-          </li>
+        {% for top in top_clientes %}
+          <li>{{ top.nome }} — R$ {{ '%.2f'|format(top.cashback) }}</li>
         {% endfor %}
       </ul>
-    {% else %}
-      <p>Nenhuma movimentação registrada ainda.</p>
-    {% endif %}
+    </div>
 
-    <a href="/exportar/{{ cliente.cpf }}">⬇️ Exportar Histórico CSV</a>
-    <br><br>
-    <a href="/" class="btn-voltar">← Voltar</a>
+    <div class="busca">
+      <input type="text" id="filtro" placeholder="Buscar por nome ou CPF...">
+    </div>
+
+    <ul class="lista-clientes" id="lista-clientes">
+      {% for cliente in clientes %}
+        <li class="{{ 'inativo' if cliente.inativo }}">
+          <a href="/cliente/{{ cliente.id }}">
+            {{ cliente.nome }} — R$ {{ "%.2f"|format(cliente.cashback) }} — {{ cliente.cpf }}
+            {% if cliente.inativo %}
+              <span style="color:red; font-size:0.9rem;">(Inativo)</span>
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <a href="/novo" class="btn-adicionar">+ Adicionar Cliente</a>
   </main>
 
   <script>
-    setTimeout(() => {
-      const toast = document.querySelector(".toast");
-      if (toast) toast.remove();
-    }, 3000);
+    const filtro = document.getElementById("filtro");
+    const lista = document.getElementById("lista-clientes");
+
+    filtro.addEventListener("input", () => {
+      const termo = filtro.value.toLowerCase();
+      const itens = lista.querySelectorAll("li");
+
+      itens.forEach(li => {
+        const texto = li.textContent.toLowerCase();
+        li.style.display = texto.includes(termo) ? "block" : "none";
+      });
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log("✅ SW registrado"))
+        .catch(err => console.error("❌ SW erro:", err));
+    }
   </script>
 </body>
 </html>
+
+

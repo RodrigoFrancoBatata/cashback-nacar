@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, redirect, Response
+from flask import Flask, render_template, request, redirect, Response, flash
 import json
 from datetime import datetime
 import csv
 import io
-import os  # <- necessário para detectar a variável PORT da Render
 
 app = Flask(__name__)
+app.secret_key = "supersegredo"  # necessário para usar flash()
 
 def carregar_dados():
     with open("clientes.json", "r", encoding="utf-8") as f:
@@ -69,6 +69,7 @@ def cadastrar_cliente():
 
     dados["clientes"].append(novo)
     salvar_dados(dados)
+    flash("Cliente cadastrado com sucesso!")
     return redirect("/")
 
 @app.route("/cashback/<cpf>", methods=["POST"])
@@ -88,6 +89,7 @@ def adicionar_cashback(cpf):
                 "data": datetime.now().strftime("%d/%m/%Y %H:%M")
             })
             salvar_dados(dados)
+            flash("Cashback adicionado com sucesso!")
             return redirect(f"/cliente/{cliente['id']}")
 
     return "Cliente não encontrado", 404
@@ -107,9 +109,11 @@ def resgatar_cashback(cpf):
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M")
                 })
                 salvar_dados(dados)
+                flash("Cashback resgatado com sucesso!")
                 return redirect(f"/cliente/{cliente['id']}")
             else:
-                return "Saldo insuficiente para resgate", 400
+                flash("Saldo insuficiente para resgate", "erro")
+                return redirect(f"/cliente/{cliente['id']}")
 
     return "Cliente não encontrado", 404
 
@@ -141,9 +145,6 @@ def exportar_csv(cpf):
         headers={"Content-Disposition": f"attachment; filename={cliente['nome'].replace(' ', '_')}_historico.csv"}
     )
 
-# 🔥 O bloco que corrige para funcionar na Render
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
+# 🔥 Necessário para Render
+app = app
 

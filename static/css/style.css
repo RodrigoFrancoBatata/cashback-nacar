@@ -91,4 +91,23 @@ body {
     color: #888;
   }
 
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #0066cc;
+    color: white;
+    padding: 0.9rem 1.4rem;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+  }
+  
+  .toast.erro {
+    background-color: #cc0000;
+  }
+
+  
   
